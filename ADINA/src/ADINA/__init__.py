@@ -1,6 +1,5 @@
 import sys
 import os
-#import subprocess
 
 from PyQt4 import QtGui, QtCore, uic
 qtCreatorFile = "D:\ADINA.ui"
@@ -16,18 +15,38 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
         
     def CalculateTax(self):
         velocity = str(self.price_box.toPlainText())
-        with open("D:\C-example05f.in","r") as f:
-            lines = f.readlines()
-        with open("D:\C-example05f.in","w") as f_w:
-            for line in lines:
-                if "VX=3.33" in line:
-                    line = line.replace("VX=3.33",velocity)
+        global first
+        first = "VX=3.33"
+        if self.Judge() == 1:
+            with open("D:\C-example05f.in","r") as f:
+                lines = f.readlines()
+            with open("D:\C-example05f.in","w") as f_w:
+                for line in lines:
+                    if first in line:
+                        line = line.replace(first,velocity)
                 f_w.write(line)
-                
+                global prior
+                prior = velocity
+        else:
+            with open("D:\C-example05f.in","r") as f:
+                lines = f.readlines()
+            with open("D:\C-example05f.in","w") as f_w:
+                for line in lines:
+                    if prior in line:
+                        line = line.replace(prior,velocity)
+                f_w.write(line)
+        prior = velocity    
+                                
     def GoToExe(self):
         #os.system(r'"F:\Program Files (x86)\ADINA90\x32\aui.exe"')
         os.system(r'"C:\Users\zhanling_ge\Desktop\adina.bat"')
-        
+    def Judge(self):
+        with open("D:\C-example05f.in","r") as f:
+            lines = f.readlines()    
+            for line in lines:
+                if first in line:
+                    return 1
+             
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     window = MyApp()
