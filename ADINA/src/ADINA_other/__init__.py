@@ -1,5 +1,6 @@
 import sys
 import os
+import shutil
 
 from PyQt4 import QtGui, QtCore, uic
 from __builtin__ import file
@@ -40,6 +41,10 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
             voltFile.seek(4,1)
             disL = voltFile.read(12)
             i=5
+            basePath = 'D:\\ADINA_again\\'
+            timePath = basePath + time
+            if not os.path.exists(timePath):
+                os.mkdir(timePath)
             f = open("D:\\ADINA_again\\WanZheng.in","r")
             f.seek(7818,0)
             dis = f.read(12)
@@ -50,18 +55,12 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
                     if dis in line:
                         line = line.replace(dis,disL)
                     f_w.write(line)                    
-                basePath = 'D:\\ADINA_again\\'
-                thisTime = time
-                timePath = basePath + thisTime
-                if not os.path.exists(timePath):
-                    os.mkdir(timePath)                
-                #add the .bat
-          
-        #file_name = QtGui.QFileDialog.getOpenFileName(self,"open file dialog","C:\Users\zhanling_ge\Desktop","Txt files(*.txt)") 
-        #with open(file_name,"r") as f:
-            #my_txt = f.read()
-            #self.textEdit.setPlainText(my_txt)
-             
+                    os.system(r'"D:\\ADINA_again\\VOLT.bat"')
+                       
+                    shutil.move("D:\\ADINA_again\\yunTu.jpg","D:\\ADINA_again\\"+time+"\\") 
+                    shutil.move("D:\\ADINA_again\\voltage.jpg","D:\\ADINA_again\\"+time+"\\")
+                    shutil.move("D:\\ADINA_again\\listVoltage.txt","D:\\ADINA_again\\"+time+"\\")                     
+                      
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     window = MyApp()
