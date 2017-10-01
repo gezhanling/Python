@@ -56,7 +56,25 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
                         line = line.replace(dis,disL)
                     f_w.write(line)                    
                     os.system(r'"D:\\ADINA_again\\VOLT.bat"')
-                       
+                    a = open('D:\\ADINA_again\\listVoltage.txt')
+                    lines = a.readlines()
+                    lists = []
+                    new = []
+                    for line in lines:
+                        lists.append(line.split())
+                    m = lists[119:170]
+                    for i in m:
+                        for j in i:
+                            new.append(j)
+                    new = new[1::2]
+                    if new[0]<0:
+                        maxV = min(new)
+                    else:
+                        maxV = max(new)
+                    f=open('D:\\ADINA_again\\max.txt','a')
+                    f.write(time+'    '+maxV)
+                    f.write('\n')
+                    f.close()  
                     shutil.move("D:\\ADINA_again\\yunTu.jpg","D:\\ADINA_again\\"+time+"\\") 
                     shutil.move("D:\\ADINA_again\\voltage.jpg","D:\\ADINA_again\\"+time+"\\")
                     shutil.move("D:\\ADINA_again\\listVoltage.txt","D:\\ADINA_again\\"+time+"\\")                     
