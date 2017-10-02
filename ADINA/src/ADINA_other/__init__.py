@@ -33,52 +33,57 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
         os.system(r'"D:\adina.bat"')
         
     def YaDian(self):
-        voltFile = open("D:\\ADINA_again\\v1.10_3u.txt","r")
-        i = 241
-        while voltFile.tell()<38668:
-            voltFile.seek(i,1)
+        voltFile = open("v1.10_3u.txt","r")
+        voltFile.seek(241,1)
+        while voltFile.tell()<332:
             time = voltFile.read(11)
             voltFile.seek(4,1)
             disL = voltFile.read(12)
-            i=5
+            voltFile.seek(5,1)
+            voltFile.tell()
+           
             basePath = 'D:\\ADINA_again\\'
             timePath = basePath + time
             if not os.path.exists(timePath):
                 os.mkdir(timePath)
-            f = open("D:\\ADINA_again\\WanZheng.in","r")
+                
+            f = open("WanZheng.in","r")
             f.seek(7818,0)
             dis = f.read(12)
-            with open("D:\\ADINA_again\\WanZheng.in","r") as f:
+            with open("WanZheng.in","r") as f:
                 lines = f.readlines()
-            with open("D:\\ADINA_again\\WanZheng.in","w") as f_w:
+            with open("WanZheng.in","w") as f_w:
                 for line in lines:
                     if dis in line:
                         line = line.replace(dis,disL)
-                    f_w.write(line)                    
-                    os.system(r'"D:\\ADINA_again\\VOLT.bat"')
-                    a = open('D:\\ADINA_again\\listVoltage.txt')
-                    lines = a.readlines()
-                    lists = []
-                    new = []
-                    for line in lines:
-                        lists.append(line.split())
-                    m = lists[119:170]
-                    for i in m:
-                        for j in i:
-                            new.append(j)
-                    new = new[1::2]
-                    if new[0]<0:
-                        maxV = min(new)
-                    else:
-                        maxV = max(new)
-                    f=open('D:\\ADINA_again\\max.txt','a')
-                    f.write(time+'    '+maxV)
-                    f.write('\n')
-                    f.close()  
-                    shutil.move("D:\\ADINA_again\\yunTu.jpg","D:\\ADINA_again\\"+time+"\\") 
-                    shutil.move("D:\\ADINA_again\\voltage.jpg","D:\\ADINA_again\\"+time+"\\")
-                    shutil.move("D:\\ADINA_again\\listVoltage.txt","D:\\ADINA_again\\"+time+"\\")                     
-                      
+                    f_w.write(line)      
+            f.close()             
+            os.system(r'VOLT_1.BAT')
+            a = open('listVoltage.txt')
+            lines = a.readlines()
+            lists = []
+            new = []
+            for line in lines:
+                lists.append(line.split())
+            m = lists[119:170]
+            for i in m:
+                for j in i:
+                    new.append(j)
+                new = new[1::2]
+            if new[0]<0:
+                maxV = min(new)
+            else:
+                maxV = max(new)
+            y=open('max.txt','a')
+            y.write(time+'    '+maxV)
+            y.write('\n')
+            y.close()
+            a.close()           
+               
+            shutil.move("yunTu.jpg","D:\\ADINA_again\\"+time+"\\") 
+            shutil.move("voltage.jpg","D:\\ADINA_again\\"+time+"\\")
+            shutil.move("listVoltage.txt","D:\\ADINA_again\\"+time+"\\")                     
+        voltFile.close()        
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     window = MyApp()
