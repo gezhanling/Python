@@ -46,43 +46,45 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
             timePath = basePath + time
             if not os.path.exists(timePath):
                 os.mkdir(timePath)
-                
-            f = open("WanZheng.in","r")
-            f.seek(7818,0)
-            dis = f.read(12)
-            with open("WanZheng.in","r") as f:
-                lines = f.readlines()
-            with open("WanZheng.in","w") as f_w:
+                f = open("WanZheng.in","r")
+                f.seek(7818,0)
+                dis = f.read(12)
+                with open("WanZheng.in","r") as f:
+                    lines = f.readlines()
+                with open("WanZheng.in","w") as f_w:
+                    for line in lines:
+                        if dis in line:
+                            line = line.replace(dis,disL)
+                        f_w.write(line)     
+                print dis
+                print disL           
+                os.system(r'VOLT_1.BAT')
+                a = open('listVoltage.txt')
+                lines = a.readlines()
+                lists = []
+                new = []
                 for line in lines:
-                    if dis in line:
-                        line = line.replace(dis,disL)
-                    f_w.write(line)      
-            f.close()             
-            os.system(r'VOLT_1.BAT')
-            a = open('listVoltage.txt')
-            lines = a.readlines()
-            lists = []
-            new = []
-            for line in lines:
-                lists.append(line.split())
-            m = lists[119:170]
-            for i in m:
-                for j in i:
-                    new.append(j)
+                    lists.append(line.split())
+                m = lists[119:170]
+                for i in m:
+                    for j in i:
+                        new.append(j)
                 new = new[1::2]
-            if new[0]<0:
-                maxV = min(new)
-            else:
-                maxV = max(new)
-            y=open('max.txt','a')
-            y.write(time+'    '+maxV)
-            y.write('\n')
-            y.close()
-            a.close()           
-               
-            shutil.move("yunTu.jpg","D:\\ADINA_again\\"+time+"\\") 
-            shutil.move("voltage.jpg","D:\\ADINA_again\\"+time+"\\")
-            shutil.move("listVoltage.txt","D:\\ADINA_again\\"+time+"\\")                     
+                print new
+                if new[1]<0:
+                    maxV = min(new)
+                else:
+                    maxV = max(new)
+                y=open('max.txt','a')
+                y.write(time+'    '+maxV)
+                y.write('\n')
+                y.close()
+                a.close()           
+                   
+                shutil.move("yunTu.jpg","D:\\ADINA_again\\"+time+"\\") 
+                shutil.move("voltage.jpg","D:\\ADINA_again\\"+time+"\\")
+                shutil.move("listVoltage.txt","D:\\ADINA_again\\"+time+"\\") 
+                                
         voltFile.close()        
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
