@@ -1,8 +1,10 @@
 import sys
 import os
 import shutil
-from PyQt4.QtGui import QFileDialog
+import numpy as np
+import matplotlib.pyplot as plt
 
+from PyQt4.QtGui import QFileDialog
 from PyQt4 import QtGui, QtCore, uic
 from __builtin__ import file
 qtCreatorFile = "D:\ADINA_again\ADINA.ui"
@@ -14,7 +16,28 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
         Ui_MainWindow.__init__(self)
         self.setupUi(self)
         self.volt_seek.clicked.connect(self.YaDian)  
-        self.file.clicked.connect(self.Fl)  
+        self.file.clicked.connect(self.Fl)
+        self.create_time_volt_button.clicked.connect(self.T2v)  
+        
+    def T2v(self):
+        a = open('max.txt')
+        lines = a.readlines()
+        lists = []
+        new = []
+        for line in lines:
+            lists.append(line.split())
+        m = lists[0:1201]
+        for i in m:
+            for j in i:
+                new.append(j)
+        voltage = new[1::2]
+        time = new[::2]
+        plt.plot( time, voltage, marker='o', mec='r', mfc='w', label = u'displacement-voltage')
+        plt.legend()
+        plt.xlabel(u'time(s)')
+        plt.ylabel(u'voltage(v)')
+        plt.show()
+        
     def Fl(self):
         global path
         path = QFileDialog.getOpenFileName(self, 'Open file','.',"txt files (*.txt)")
