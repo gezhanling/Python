@@ -2,23 +2,39 @@
 
 import requests 
 from bs4 import BeautifulSoup 
+import numpy as np
+import re
 import os
- 
-headers = {'User-Agent':"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/22.0.1207.1 Safari/537.1"}##���������ͷ���󲿷���վû���������ͷ�ᱨ������ؼ���Ŷ��
-all_url = 'http://www.mzitu.com/all'  
-start_html = requests.get(all_url,  headers=headers) 
-Soup = BeautifulSoup(start_html.text, 'lxml')
-all_a = Soup.find('div', class_='all').find_all('a') ##意思是先查找 class为 all 的div标签，然后查找所有的<a>标签。
-for a in all_a:
-    title = a.get_text() #取出a标签的文本
-    href = a['href'] #取出a标签的href 属性
-    
-    html = requests.get(href, headers=headers) ##上面说过了
-    html_Soup = BeautifulSoup(html.text, 'lxml') ##上面说过了
-    
-    max_span = html_Soup.find('div', class_='pagenavi').find_all('span')[-2].get_text() ##查找所有的<span>标签获取第十个的<span>标签中的文本也就是最后一个页面了。
-    for page in range(1, int(max_span)+1): ##不知道为什么这么用的小哥儿去看看基础教程吧
-        page_url = href + '/' + str(page) ##同上
-        print(page_url) ##这个page_url就是每张图片的页面地址啦！但还不是实际地址！
+import pandas as pd
+from astropy.io.ascii.tests.test_fixedwidth import table
 
-    
+url = "http://rl.fx678.com/country.html" 
+headers = {'User-Agent':"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/22.0.1207.1 Safari/537.1"}##���������ͷ���󲿷���վû���������ͷ�ᱨ������ؼ���Ŷ��
+ 
+r = requests.get(url,  headers=headers) 
+html = r.text.encode(r.encoding).decode()
+soup = BeautifulSoup(html, 'lxml')
+table = soup.find('table', class_ = 'cjsj_tab3')
+#查看行数
+height = len(table.findAll(lambda tag:tag.name =='tr' and
+                           len(tag.findAll('td'))>=1))
+#print(height)
+#查看列数
+for row in table.findAll('tr'):
+    print(len(row.findAll('td')),end = '\t') 
+#收集表头
+columns = [x.text for x in table.tr.findAll('th')]
+columns = [x.replace('\xa0',' ') for x in columns]
+print(columns)
+#构造dataframe 存储表格
+width = len(columns)
+df = pd.DataFrame(data = np.full((height, width),' ',dtype = 'U'), columns = columns)
+rows = [row for row in table.findAll('tr') if row.find('td')!=None]
+#逐行填入数据
+for i in range(len(rows)):
+    cells = rows[i].findAll('td')
+    #若该行单元格数量与dataframe列数一样
+    if len(cells) == width:
+        df.iloc[i] =[cell.text.replace(' ','').replace('/n','') for cell in cells]
+
+print(df)
